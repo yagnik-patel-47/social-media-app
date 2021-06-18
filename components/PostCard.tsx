@@ -303,6 +303,12 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
                 >
                   <CommentIcon />
                 </IconButton>
+                {post.comments.length !== 0 && (
+                  <Typography variant="button">
+                    {post.comments.length}
+                  </Typography>
+                )}
+                <Typography></Typography>
               </span>
               {profile?.savedPosts?.includes(postID) ? (
                 <IconButton

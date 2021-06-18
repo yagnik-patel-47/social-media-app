@@ -35,6 +35,7 @@ class MyDocument extends Document {
             sizes="16x16"
             href="/favicon-16x16.png"
           />
+          <link rel="manifest" href="/manifest.json" />
           <link rel="icon" type="image/ico" href="/favicon.ico" />
           <meta name="msapplication-TileColor" content="#da532c" />
           <meta name="theme-color" content="#42a5f5" />

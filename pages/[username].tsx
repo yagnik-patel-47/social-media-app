@@ -63,7 +63,7 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
     700: 1,
   };
 
-  const [userData] = useDocumentData(db.collection("users").doc(data?.id), {
+  const [userData] = useDocumentData(db.collection("users").doc(data.id), {
     snapshotListenOptions: { includeMetadataChanges: true },
   });
 
@@ -75,10 +75,10 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
   );
 
   useEffect(() => {
-    const accountPostsFilter = allPosts?.docs?.filter((post) =>
-      data?.posts?.includes(post?.id)
-    );
-    if (accountPostsFilter) {
+    if (allPosts && data) {
+      const accountPostsFilter = allPosts.docs.filter((post) =>
+        userData.posts.includes(post.id)
+      );
       setAccPosts(accountPostsFilter);
     }
   }, [allPosts, router.query.username]);
@@ -221,7 +221,7 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
                 </div>
               </div>
             </div>
-            <div className="mt-6 h-full flex flex-col px-4 md:px-0 md:pr-12">
+            <div className="mt-6 h-full flex flex-col px-4">
               <Typography variant="h6">Posts</Typography>
               {accPosts.length === 0 && <Typography>0 Posts</Typography>}
               <Masonry

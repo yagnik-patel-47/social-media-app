@@ -46,6 +46,7 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
   const [commentText, setCommentText] = useState<string>("");
   const [expanded, setExpanded] = useState<boolean>(false);
   const [likesModalOpen, setLikesModalOpen] = useState<boolean>(false);
+  const [likeAnimation, setLikeAnimation] = useState<boolean>(false);
   const profile: ProfileData = useSelector(
     (store: RootStateOrAny) => store.profileData
   );
@@ -174,6 +175,13 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
     storage.ref(`post_${postID}`).delete();
   };
 
+  const PopUpLikeAnimation = () => {
+    setLikeAnimation(true);
+    setTimeout(() => {
+      setLikeAnimation(false);
+    }, 1500);
+  };
+
   return (
     <AnimateSharedLayout>
       <motion.figure layout>
@@ -220,10 +228,10 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
             </Popover>
           </div>
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+            className="flex items-center justify-center relative"
+            onDoubleClick={() => {
+              PopUpLikeAnimation();
+              addToLiked();
             }}
           >
             <Image
@@ -237,6 +245,25 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
                 post.aspectRatio === "16:9" ? "/dummy16_9.jpg" : "/dummy1_1.jpg"
               }
             />
+            <AnimatePresence>
+              {likeAnimation && (
+                <motion.div className="absolute top-0 left-0 w-full h-full  backdrop-filter flex justify-center items-center">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                      duration: 0.5,
+                    }}
+                  >
+                    <FavoriteIcon style={{ fontSize: "4rem" }} />
+                  </motion.span>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <CardContent>
             <Typography>{post.caption}</Typography>

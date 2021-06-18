@@ -21,7 +21,7 @@ const LikesModal: FC<Props> = ({ likes, setLikesModalOpen }: Props) => {
           type: "spring",
           stiffness: 500,
           damping: 30,
-          duration: 0.4,
+          duration: 0.5,
         }}
       >
         <div className="flex justify-between w-full items-center">

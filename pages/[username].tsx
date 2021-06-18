@@ -131,8 +131,8 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
   return (
     <>
       {profileFound ? (
-        <div className="flex hide-scrollbars overflow-x-hidden flex-col pt-8 md:pl-32 bg-bg-secondary w-full text-white">
-          <div className="flex items-center pl-4 md:pl-0">
+        <div className="flex hide-scrollbars overflow-x-hidden flex-col pt-8 md:px-16 lg:px-24 xl:px-32 bg-bg-secondary w-full text-white">
+          <div className="flex items-center pl-4 md:pl-0 flex-col md:flex-row">
             {isMobbile && (
               <IconButton
                 onClick={() => {
@@ -151,8 +151,8 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
                 className={classes.avatar}
               />
             </div>
-            <div className="flex ml-4 md:ml-16 my-4 md:my-6 flex-col space-y-4 items-center">
-              <div className="flex space-x-6">
+            <div className="flex mx-4 md:ml-16 my-4 md:my-6 flex-col space-y-4 items-center">
+              <div className="flex md:space-x-6 flex-col md:flex-row space-y-4 md:space-y-0">
                 <Typography className="!text-2xl md:!text-3xl !font-light">
                   {data.username}
                 </Typography>

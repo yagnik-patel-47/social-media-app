@@ -9,7 +9,6 @@ const Home: FC = () => {
     <>
       <Head>
         <title>Moments</title>
-        <link rel="icon" href="/moments.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
       <div className="bg-bg-secondary h-full w-full">

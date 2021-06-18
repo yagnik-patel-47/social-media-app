@@ -20,6 +20,7 @@ import Modal from "../components/Modal";
 import MenuIcon from "@material-ui/icons/Menu";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { AnimatePresence } from "framer-motion";
+import Head from "next/head";
 
 interface Props {
   data: {
@@ -131,123 +132,145 @@ const ProfilePage: FC<Props> = ({ data, profileFound }: Props) => {
   return (
     <>
       {profileFound ? (
-        <div className="flex hide-scrollbars overflow-x-hidden flex-col pt-8 md:px-16 lg:px-24 xl:px-32 bg-bg-secondary w-full text-white">
-          <div className="flex items-center pl-4 md:pl-0 flex-col md:flex-row">
-            {isMobbile && (
-              <IconButton
-                onClick={() => {
-                  dispatch({ type: "SHOW_SIDEBAR" });
-                }}
-                className="!self-start"
-                style={{ outline: "none" }}
-              >
-                <MenuIcon />
-              </IconButton>
-            )}
-            <div>
-              <Avatar
-                src={data.photo}
-                alt="profile image"
-                className={classes.avatar}
-              />
-            </div>
-            <div className="flex mx-4 md:ml-16 my-4 md:my-6 flex-col space-y-4 items-center">
-              <div className="flex md:space-x-6 flex-col md:flex-row space-y-4 md:space-y-0">
-                <Typography className="!text-2xl md:!text-3xl !font-light">
-                  {data.username}
-                </Typography>
-                {profile.email !== data.email && (
+        <>
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <title>{data.username}</title>
+          </Head>
+          <div className="flex hide-scrollbars overflow-x-hidden flex-col pt-8 md:px-16 lg:px-24 xl:px-32 bg-bg-secondary w-full text-white">
+            <div className="flex items-center pl-4 md:pl-0 flex-col md:flex-row">
+              {isMobbile && (
+                <IconButton
+                  onClick={() => {
+                    dispatch({ type: "SHOW_SIDEBAR" });
+                  }}
+                  className="!self-start"
+                  style={{ outline: "none" }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+              <div>
+                <Avatar
+                  src={data.photo}
+                  alt="profile image"
+                  className={classes.avatar}
+                />
+              </div>
+              <div className="flex mx-4 md:ml-16 my-4 md:my-6 flex-col space-y-4 items-center">
+                <div className="flex md:space-x-6 flex-col md:flex-row space-y-4 md:space-y-0">
+                  <Typography className="!text-2xl md:!text-3xl !font-light">
+                    {data.username}
+                  </Typography>
+                  {profile.email !== data.email && (
+                    <Button
+                      onClick={
+                        profile.following.includes(data.id)
+                          ? unFollowUser
+                          : followUser
+                      }
+                      style={{ outline: "none" }}
+                      variant="outlined"
+                      size={isMobbile ? "small" : "medium"}
+                    >
+                      {profile.following.includes(data.id)
+                        ? "Unfollow"
+                        : "Follow"}
+                    </Button>
+                  )}
+                </div>
+                <div>
+                  <Typography variant="button" style={{ padding: "0 0.5rem" }}>
+                    {userData?.posts?.length} Posts
+                  </Typography>
                   <Button
-                    onClick={
-                      profile.following.includes(data.id)
-                        ? unFollowUser
-                        : followUser
-                    }
+                    onClick={() => {
+                      router.push(
+                        {
+                          pathname: `/${encodeURIComponent(data.username)}`,
+                          query: { modalType: "followers" },
+                        },
+                        undefined,
+                        { shallow: true }
+                      );
+                    }}
                     style={{ outline: "none" }}
-                    variant="outlined"
                     size={isMobbile ? "small" : "medium"}
                   >
-                    {profile.following.includes(data.id)
-                      ? "Unfollow"
-                      : "Follow"}
+                    {userData?.followers?.length} Followers
                   </Button>
-                )}
-              </div>
-              <div>
-                <Typography variant="button" style={{ padding: "0 0.5rem" }}>
-                  {userData?.posts?.length} Posts
-                </Typography>
-                <Button
-                  onClick={() => {
-                    router.push(
-                      {
-                        pathname: `/${encodeURIComponent(data.username)}`,
-                        query: { modalType: "followers" },
-                      },
-                      undefined,
-                      { shallow: true }
-                    );
-                  }}
-                  style={{ outline: "none" }}
-                  size={isMobbile ? "small" : "medium"}
-                >
-                  {userData?.followers?.length} Followers
-                </Button>
-                <Button
-                  onClick={() => {
-                    router.push(
-                      {
-                        pathname: `/${encodeURIComponent(data.username)}`,
-                        query: { modalType: "following" },
-                      },
-                      undefined,
-                      { shallow: true }
-                    );
-                  }}
-                  style={{ outline: "none" }}
-                  size={isMobbile ? "small" : "medium"}
-                >
-                  {userData?.following?.length} Following
-                </Button>
+                  <Button
+                    onClick={() => {
+                      router.push(
+                        {
+                          pathname: `/${encodeURIComponent(data.username)}`,
+                          query: { modalType: "following" },
+                        },
+                        undefined,
+                        { shallow: true }
+                      );
+                    }}
+                    style={{ outline: "none" }}
+                    size={isMobbile ? "small" : "medium"}
+                  >
+                    {userData?.following?.length} Following
+                  </Button>
+                </div>
               </div>
             </div>
+            <div className="mt-6 h-full flex flex-col px-4 md:px-0 md:pr-12">
+              <Typography variant="h6">Posts</Typography>
+              {accPosts.length === 0 && <Typography>0 Posts</Typography>}
+              <Masonry
+                breakpointCols={breakpoints}
+                className="space-x-4 my-masonry-grid mb-6"
+                columnClassName="my-masonry-grid_column"
+              >
+                {accPosts &&
+                  accPosts.map((post: any) => (
+                    <PostCard
+                      key={post.id}
+                      post={{
+                        caption: post.data().caption,
+                        user: post.data().user,
+                        image: post.data().image,
+                        likes: post.data().likes,
+                        comments: post.data().comments,
+                        timestamp: post.data().timestamp,
+                        aspectRatio: post.data().aspectRatio,
+                      }}
+                      postID={post.id}
+                    />
+                  ))}
+              </Masonry>
+            </div>
+            <AnimatePresence>
+              {router.query.modalType && (
+                <Modal
+                  id={data.id}
+                  type={router.query.modalType}
+                  origin="user"
+                />
+              )}
+            </AnimatePresence>
           </div>
-          <div className="mt-6 h-full flex flex-col px-4 md:px-0 md:pr-12">
-            <Typography variant="h6">Posts</Typography>
-            {accPosts.length === 0 && <Typography>0 Posts</Typography>}
-            <Masonry
-              breakpointCols={breakpoints}
-              className="space-x-4 my-masonry-grid mb-6"
-              columnClassName="my-masonry-grid_column"
-            >
-              {accPosts &&
-                accPosts.map((post: any) => (
-                  <PostCard
-                    key={post.id}
-                    post={{
-                      caption: post.data().caption,
-                      user: post.data().user,
-                      image: post.data().image,
-                      likes: post.data().likes,
-                      comments: post.data().comments,
-                      timestamp: post.data().timestamp,
-                      aspectRatio: post.data().aspectRatio,
-                    }}
-                    postID={post.id}
-                  />
-                ))}
-            </Masonry>
-          </div>
-          <AnimatePresence>
-            {router.query.modalType && (
-              <Modal id={data.id} type={router.query.modalType} origin="user" />
-            )}
-          </AnimatePresence>
-        </div>
+        </>
       ) : (
-        <div className="flex items-center justify-center w-full h-full bg-bg-secondary text-white">
-          <Typography variant="h6">User not found!</Typography>
-        </div>
+        <>
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <title>Not Found!</title>
+          </Head>
+          <div className="flex items-center justify-center w-full h-full bg-bg-secondary text-white">
+            <Typography variant="h6">User not found!</Typography>
+          </div>
+        </>
       )}
     </>
   );

@@ -173,6 +173,7 @@ const Login = ({ setLogged }) => {
   return (
     <>
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{register ? "Sign Up" : "Log In"}</title>
       </Head>
       <div className="grid place-items-center h-full bg-[#282a34] p-4">

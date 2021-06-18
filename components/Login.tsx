@@ -1,22 +1,33 @@
 import { TextField, Typography, Divider, Button } from "@material-ui/core";
 import Image from "next/image";
-import { FC, useState } from "react";
+import { FC, SetStateAction, Dispatch, useState } from "react";
 import Head from "next/head";
 import { auth, googleProvider, db } from "../firebase";
 import { motion, AnimatePresence, AnimateSharedLayout } from "framer-motion";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import AppSnackBar from "../components/AppSnackBar";
 
-const Login = ({ setLogged }) => {
-  const [register, setRegister] = useState(true);
-  const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [googleRes, setGoogleRes] = useState(false);
-  const [image, setImage] = useState(null);
+interface Props {
+  setLogged: Dispatch<SetStateAction<boolean>>;
+}
+
+const Login: FC<Props> = ({ setLogged }: Props) => {
+  const [register, setRegister] = useState<boolean>(true);
+  const [fullName, setFullName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [googleRes, setGoogleRes] = useState<boolean>(false);
+  const [image, setImage] = useState<string>("");
+  const dispatch = useDispatch();
+  const [snackBarType, setSnackBarType] =
+    useState<"error" | "info" | "success" | "warning">("error");
+  const [snackBarMsg, setSnackBarMsg] = useState<string>("");
 
   useEffect(() => {
     if (auth.currentUser) setLogged(true);
+    dispatch({ type: "CLOSE_SNACKBAR" });
   }, []);
 
   const resetFeilds = () => {
@@ -29,7 +40,9 @@ const Login = ({ setLogged }) => {
 
   const ContinueGoogleSignUp = async () => {
     if (!(username && password)) {
-      alert("please fill all fields.");
+      setSnackBarType("error");
+      setSnackBarMsg("please fill all fields!");
+      dispatch({ type: "OPEN_SNACKBAR" });
       return;
     }
     const findExistingUsername = await db
@@ -37,7 +50,11 @@ const Login = ({ setLogged }) => {
       .where("userName", "==", username)
       .get();
     findExistingUsername.size !== 0
-      ? alert("username had already taken")
+      ? (() => {
+          setSnackBarType("error");
+          setSnackBarMsg("username had already taken!");
+          dispatch({ type: "OPEN_SNACKBAR" });
+        })()
       : (() => {
           db.collection("users")
             .doc(auth.currentUser.uid)
@@ -56,8 +73,8 @@ const Login = ({ setLogged }) => {
               },
               { merge: true }
             );
+          resetFeilds();
           setGoogleRes(false);
-          alert("succesfully created your account.");
           setLogged(true);
         })();
   };
@@ -69,7 +86,9 @@ const Login = ({ setLogged }) => {
       return;
     }
     if (!(username && password && email && fullName)) {
-      alert("please fill all fields.");
+      setSnackBarType("error");
+      setSnackBarMsg("please fill all fields!");
+      dispatch({ type: "OPEN_SNACKBAR" });
       return;
     }
 
@@ -98,16 +117,19 @@ const Login = ({ setLogged }) => {
               },
               { merge: true }
             );
-            alert("succesfully created your account.");
             resetFeilds();
             setLogged(true);
           })();
         })
         .catch((err) => {
-          alert(err.message);
+          setSnackBarType("error");
+          setSnackBarMsg(err.message);
+          dispatch({ type: "OPEN_SNACKBAR" });
         });
     } else {
-      alert("username had already taken");
+      setSnackBarType("error");
+      setSnackBarMsg("username had already taken!");
+      dispatch({ type: "OPEN_SNACKBAR" });
     }
   };
 
@@ -120,7 +142,9 @@ const Login = ({ setLogged }) => {
     findExistingAccount.size !== 0
       ? (() => {
           auth.signOut();
-          alert("Already an account with same email.");
+          setSnackBarType("error");
+          setSnackBarMsg("Already an account with same email.");
+          dispatch({ type: "OPEN_SNACKBAR" });
         })()
       : (() => {
           setGoogleRes(true);
@@ -138,13 +162,14 @@ const Login = ({ setLogged }) => {
       .get();
     findExistingAccount?.size !== 0
       ? (() => {
-          alert("succesfully logged in your account.");
           resetFeilds();
           setLogged(true);
         })()
       : (() => {
           auth.signOut();
-          alert("Account not found! Sign up please.");
+          setSnackBarType("error");
+          setSnackBarMsg("Account not found! Sign up please.");
+          dispatch({ type: "OPEN_SNACKBAR" });
         })();
   };
 
@@ -152,7 +177,6 @@ const Login = ({ setLogged }) => {
     auth
       .signInWithEmailAndPassword(email, password)
       .then(() => {
-        alert("succesfully logged in your account.");
         resetFeilds();
         setLogged(true);
       })
@@ -161,11 +185,15 @@ const Login = ({ setLogged }) => {
           err.message ===
           "The password is invalid or the user does not have a password."
         ) {
-          alert(
+          setSnackBarType("error");
+          setSnackBarMsg(
             "The password is invalid. ( If you had signup with google, please login with google. )"
           );
+          dispatch({ type: "OPEN_SNACKBAR" });
         } else {
-          alert(err.message);
+          setSnackBarType("error");
+          setSnackBarMsg(err.message);
+          dispatch({ type: "OPEN_SNACKBAR" });
         }
       });
   };
@@ -324,6 +352,7 @@ const Login = ({ setLogged }) => {
                     onClick={() => {
                       setRegister(false);
                     }}
+                    style={{ outline: "none" }}
                   >
                     {"Log In"}
                   </Button>
@@ -338,6 +367,7 @@ const Login = ({ setLogged }) => {
                     onClick={() => {
                       setRegister(true);
                     }}
+                    style={{ outline: "none" }}
                   >
                     {"Sign Up"}
                   </Button>
@@ -347,6 +377,7 @@ const Login = ({ setLogged }) => {
           </motion.div>
         </AnimateSharedLayout>
       </div>
+      <AppSnackBar type={snackBarType} message={snackBarMsg} />
     </>
   );
 };

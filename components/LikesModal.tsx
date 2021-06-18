@@ -3,6 +3,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { motion } from "framer-motion";
 import { FC, SetStateAction, Dispatch } from "react";
 import Link from "next/link";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { db } from "../firebase";
 
 interface Props {
   likes: Array<any>;
@@ -37,12 +39,7 @@ const LikesModal: FC<Props> = ({ likes, setLikesModalOpen }: Props) => {
         </div>
         <div className="flex flex-col w-full mt-4 px-4 space-y-4 h-full overflow-x-hidden hide-scrollbars">
           {likes.map((like, index) => (
-            <Link href={`${like.username}`} key={index}>
-              <div className="flex items-center space-x-4">
-                <Avatar src={like.photo} alt="profile image" />
-                <Typography>{like.username}</Typography>
-              </div>
-            </Link>
+            <LikeAction like={like} key={index} />
           ))}
           {likes.length === 0 && (
             <Typography>
@@ -56,3 +53,26 @@ const LikesModal: FC<Props> = ({ likes, setLikesModalOpen }: Props) => {
 };
 
 export default LikesModal;
+
+interface LikesProps {
+  like: string;
+}
+
+const LikeAction: FC<LikesProps> = ({ like }: LikesProps) => {
+  const [likeUserData] = useDocumentData(db.collection("users").doc(like), {
+    snapshotListenOptions: { includeMetadataChanges: true },
+  });
+
+  return (
+    <>
+      {likeUserData && (
+        <Link href={`/${encodeURIComponent(likeUserData.userName)}`}>
+          <div className="flex items-center space-x-4">
+            <Avatar src={likeUserData.photo} alt="profile image" />
+            <Typography>{likeUserData.userName}</Typography>
+          </div>
+        </Link>
+      )}
+    </>
+  );
+};

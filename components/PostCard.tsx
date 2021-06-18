@@ -18,7 +18,7 @@ import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import { db, storage, auth } from "../firebase";
 import { FC, useState, MouseEvent } from "react";
 import firebase from "firebase/app";
-import { RootStateOrAny, useSelector } from "react-redux";
+import { RootStateOrAny, useSelector, useDispatch } from "react-redux";
 import { ProfileData } from "../reducers/UpdateProfile";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import Link from "next/link";
@@ -26,12 +26,13 @@ import Image from "next/image";
 import LikesModal from "../components/LikesModal";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
+import AppSnackBar from "./AppSnackBar";
 
 interface Props {
   post: {
     caption: string;
     image: string;
-    likes: object[];
+    likes: string[];
     comments: Array<any>;
     user: string;
     timestamp: string;
@@ -50,6 +51,7 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
   const profile: ProfileData = useSelector(
     (store: RootStateOrAny) => store.profileData
   );
+  const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -79,10 +81,7 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
       .doc(postID)
       .set(
         {
-          likes: firebase.firestore.FieldValue.arrayUnion({
-            photo: profile.photo,
-            username: profile.userName,
-          }),
+          likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid),
         },
         { merge: true }
       );
@@ -102,10 +101,9 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
       .doc(postID)
       .set(
         {
-          likes: firebase.firestore.FieldValue.arrayRemove({
-            photo: profile.photo,
-            username: profile.userName,
-          }),
+          likes: firebase.firestore.FieldValue.arrayRemove(
+            auth.currentUser.uid
+          ),
         },
         { merge: true }
       );
@@ -158,7 +156,7 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
         );
       setCommentText("");
     } else {
-      alert("please write your comment first!");
+      dispatch({ type: "OPEN_SNACKBAR" });
     }
   };
 
@@ -376,6 +374,7 @@ const PostCard: FC<Props> = ({ post, postID }: Props) => {
           />
         )}
       </AnimatePresence>
+      <AppSnackBar type="error" message="Please write your comment first." />
     </AnimateSharedLayout>
   );
 };

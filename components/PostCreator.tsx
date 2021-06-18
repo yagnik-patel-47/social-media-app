@@ -20,7 +20,6 @@ import { db, storage, auth } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
 import firebase from "firebase/app";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { motion } from "framer-motion";
 
 const useStyles = makeStyles({
   backdrop: {

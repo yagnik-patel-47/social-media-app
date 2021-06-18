@@ -41,7 +41,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   if (!(logged && user))
     return (
       <ThemeProvider theme={theme}>
-        <Login setLogged={setLogged} />
+        <Provider store={store}>
+          <Login setLogged={setLogged} />
+        </Provider>
       </ThemeProvider>
     );
 

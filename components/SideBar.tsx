@@ -23,6 +23,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { AnimateSharedLayout, motion } from "framer-motion";
+import AddIcon from "@material-ui/icons/Add";
+import blue from "@material-ui/core/colors/blue";
+import EditIcon from "@material-ui/icons/Edit";
 
 const useStyles = makeStyles((theme) => ({
   SideBar: {
@@ -40,6 +43,12 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     height: "7rem",
     width: "7rem",
+  },
+  avatarPlusBtn: {
+    position: "absolute",
+    right: "0",
+    bottom: "0.2rem",
+    background: `linear-gradient(to bottom right, ${blue[300]}, ${blue[700]})`,
   },
 }));
 
@@ -114,7 +123,7 @@ const SideBar: FC = () => {
           <Image src="/moments.png" alt="Logo" height={45} width={45} />
           <Typography variant="h6">Moments</Typography>
         </div>
-        {router.query.username ? (
+        {router.route !== "/" ? (
           <button
             onClick={() => {
               router.push("/", undefined, { shallow: true });
@@ -134,6 +143,7 @@ const SideBar: FC = () => {
             onClick={() => {
               dispatch({ type: "HIDE_SIDEBAR" });
             }}
+            style={{ outline: "none" }}
           >
             <CloseIcon />
           </IconButton>
@@ -141,27 +151,57 @@ const SideBar: FC = () => {
       </div>
       <div className="flex flex-col items-center space-y-3 mt-4">
         {profile.photo.length === 0 ? (
-          <Avatar
-            onClick={() => {
-              fileInputRef.current.click();
-            }}
-            style={{ background: "#34a853", color: "#fff" }}
-            alt="profile"
-            className={classes.avatar}
-          >
-            <Typography variant="h5">
-              {profile?.fullName[0]?.toUpperCase()}
-            </Typography>
-          </Avatar>
+          <div className="relative">
+            <Avatar
+              onClick={() => {
+                fileInputRef.current.click();
+              }}
+              style={{ background: "#34a853", color: "#fff" }}
+              alt="profile"
+              className={classes.avatar}
+            >
+              <Typography variant="h5">
+                {profile?.fullName[0]?.toUpperCase()}
+              </Typography>
+            </Avatar>
+            <IconButton
+              className={classes.avatarPlusBtn}
+              disableRipple
+              style={{ outline: "none" }}
+              disableFocusRipple
+              disableTouchRipple
+              size="small"
+              onClick={() => {
+                fileInputRef.current.click();
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
         ) : (
-          <Avatar
-            src={profile.photo}
-            alt="profile"
-            className={classes.avatar}
-            onClick={() => {
-              fileInputRef.current.click();
-            }}
-          ></Avatar>
+          <div className="relative">
+            <Avatar
+              src={profile.photo}
+              alt="profile"
+              className={classes.avatar}
+              onClick={() => {
+                fileInputRef.current.click();
+              }}
+            />
+            <IconButton
+              className={classes.avatarPlusBtn}
+              disableRipple
+              style={{ outline: "none" }}
+              disableFocusRipple
+              disableTouchRipple
+              size="small"
+              onClick={() => {
+                fileInputRef.current.click();
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </div>
         )}
         <input
           type="file"
@@ -169,8 +209,8 @@ const SideBar: FC = () => {
           accept="image/*"
           ref={fileInputRef}
           onChange={(e) => {
-            if (e?.target?.files[0]?.size > 2000000) {
-              alert("Please enter file less than size of 2mb");
+            if (e?.target?.files[0]?.size > 10000000) {
+              alert("Please select file less than size of 10mb");
             } else {
               setImageFile(e.target.files[0]);
             }
@@ -247,7 +287,19 @@ const SideBar: FC = () => {
             {!showFeed && <Widget />}
           </Button>
         </AnimateSharedLayout>
-        <Divider />
+        <Divider className="!mr-10" />
+        <Button
+          className="!justify-start !p-3"
+          startIcon={<EditIcon style={{ marginRight: "1rem" }} />}
+          size="large"
+          style={{ outline: "none" }}
+          onClick={() => {
+            router.push("/edit_profile");
+            dispatch({ type: "HIDE_SIDEBAR" });
+          }}
+        >
+          Edit Profile
+        </Button>
         <Button
           className="!justify-start !p-3"
           startIcon={<ExitToAppIcon style={{ marginRight: "1rem" }} />}

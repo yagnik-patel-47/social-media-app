@@ -1,23 +1,30 @@
-# Next.js + Tailwind CSS Example
+# Moments
 
-This example shows how to use [Tailwind CSS](https://tailwindcss.com/) (v2.1) with Next.js. It follows the steps outlined in the official [Tailwind docs](https://tailwindcss.com/docs/guides/nextjs).
+A social media app having features similar to Instagram. App built with nextjs provides you login system with firebase and also database for storing your data.
 
-It uses the new [`Just-in-Time Mode`](https://tailwindcss.com/docs/just-in-time-mode) for Tailwind CSS.
+## Features
 
-## Deploy your own
+- Login
+- Create, Like, Save, comment Posts
+- Follow and Unfollow Accounts
+- Profile Customisation
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+## Technologies
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-tailwindcss&project-name=with-tailwindcss&repository-name=with-tailwindcss)
+- NextJS
+- Firebase
+- Redux
+- Typescript
+- Material UI
+- TailwindCSS
+- Framer Motion (Animations)
 
-## How to use
+## Demo
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init) or [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/) to bootstrap the example:
+https://moments-sma.vercel.app
 
-```bash
-npx create-next-app --example with-tailwindcss with-tailwindcss-app
-# or
-yarn create next-app --example with-tailwindcss with-tailwindcss-app
-```
+## Screenshots
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+![App Screenshot](https://user-images.githubusercontent.com/74972526/122684022-bd33b100-d220-11eb-92ff-9712278be7f6.png)
+
+![App Screenshot](https://user-images.githubusercontent.com/74972526/122684007-9b3a2e80-d220-11eb-98e7-b2d41989908c.png)
